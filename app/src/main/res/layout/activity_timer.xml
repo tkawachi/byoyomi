@@ -1,25 +1,62 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    tools:context=".TimerActivity">
+    tools:context=".TimerActivity"
+    android:weightSum="2.4"
+    android:orientation="vertical"
+    android:id="@+id/fullscreen_content"
+    android:padding="14dp">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
-        android:textSize="50sp"
-        android:textStyle="bold" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
 
-</FrameLayout>
+    <ToggleButton
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/toggleButton"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:weightSum="2">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="New Button"
+            android:id="@+id/button"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="New Button"
+            android:id="@+id/button2"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <ToggleButton
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/toggleButton2"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/toggleButton"
+        android:layout_alignStart="@+id/toggleButton" />
+
+</LinearLayout>

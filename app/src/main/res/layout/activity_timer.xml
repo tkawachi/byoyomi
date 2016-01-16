@@ -16,13 +16,14 @@
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
 
-    <ToggleButton
+    <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/toggleButton"
+        android:text="Player 2"
+        android:id="@+id/player2Btn"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textSize="70sp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -36,27 +37,25 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:text="New Button"
-            android:id="@+id/button"
+            android:text="@string/pause"
+            android:id="@+id/pauseBtn"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:text="New Button"
-            android:id="@+id/button2"
+            android:text="@string/setting"
+            android:id="@+id/toSettingsBtn"
             android:layout_weight="1" />
     </LinearLayout>
 
-    <ToggleButton
+    <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/toggleButton2"
+        android:text="Player 1"
+        android:id="@+id/player1Btn"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
-        android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/toggleButton"
-        android:layout_alignStart="@+id/toggleButton" />
+        android:textSize="70sp" />
 
 </LinearLayout>

@@ -39,6 +39,9 @@ class TimerActivity : Activity(), AnkoLogger {
                 GameState.Player2Thinking -> {
                     buttons?.startTurn(Player2)
                 }
+                GameState.NotStarted -> {
+                    buttons?.setDefault()
+                }
                 else -> {}
             }
         }

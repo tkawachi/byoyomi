@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import com.github.tkawachi.byoyomi.Player.Player1
+import com.github.tkawachi.byoyomi.Player.Player2
 import com.github.tkawachi.byoyomi.sound.Sound
 import com.github.tkawachi.byoyomi.sound.Speech
 import com.github.tkawachi.byoyomi.timer.ByobomiTimer
@@ -24,10 +26,24 @@ class TimerActivity : Activity(), AnkoLogger {
 
     private val clock = SystemClock()
 
-    private var state = GameState.NotStarted
+    private var _state = GameState.NotStarted
+    private var state: GameState
+        get() = _state
+        set(value) {
+            _state = value
+
+            when (_state) {
+                GameState.Player1Thinking -> {
+                    buttons?.startTurn(Player1)
+                }
+                GameState.Player2Thinking -> {
+                    buttons?.startTurn(Player2)
+                }
+                else -> {}
+            }
+        }
     private var pausedState: GameState? = null
-    private var player1Btn: Button? = null
-    private var player2Btn: Button? = null
+    private var buttons: TurnButtonPair? = null
     private var sound: Sound? = null
     private var player1Timer: Timer? = null
     private var player2Timer: Timer? = null
@@ -43,15 +59,14 @@ class TimerActivity : Activity(), AnkoLogger {
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
-    private fun initTimer(setting: Setting, player1: Boolean): Timer {
-        val playerString = "player${if (player1) 1 else 2}"
-        (if (player1) player1Btn else player2Btn)?.text = DisplayData.fromSetting(setting).buttonText()
+    private fun initTimer(setting: Setting, player: Player): Timer {
+        val playerString = "$player"
+        buttons?.byPlayer(player)?.text = DisplayData.fromSetting(setting).buttonText()
 
         return ByobomiTimer(clock, setting, 100L,
                 { data ->
                     verbose("$playerString ${data.buttonText()}")
-                    val btn = if (player1) player1Btn else player2Btn
-                    btn?.text = data.buttonText()
+                    buttons?.byPlayer(player)?.text = data.buttonText()
                     if (data.残り持ち時間 == 0 && data.残り秒読み時間 < 10) {
                         val n = 10 - data.残り秒読み時間
                         sound?.playNumber(n)
@@ -88,10 +103,16 @@ class TimerActivity : Activity(), AnkoLogger {
         find<Button>(R.id.toSettingsBtn).setOnClickListener { info("clicked") } // TODO
         find<View>(R.id.player2Btn).rotation = 180f
 
-        player1Btn = find<Button>(R.id.player1Btn)
-        player1Btn?.setOnTouchDown { startTimer(true) }
-        player2Btn = find<Button>(R.id.player2Btn)
-        player2Btn?.setOnTouchDown { startTimer(false) }
+        fun getButton(player: Player): TurnButton {
+            val id = when (player) {
+                Player1 -> R.id.player1Btn
+                Player2 -> R.id.player2Btn
+            }
+            val b = find<TurnButton>(id)
+            b.setOnTouchDown { startTimer(player) }
+            return b
+        }
+        buttons = TurnButtonPair(getButton(Player1), getButton(Player2))
 
         find<Button>(R.id.pauseBtn).setOnClickListener {
             when (state) {
@@ -116,44 +137,51 @@ class TimerActivity : Activity(), AnkoLogger {
                 }
                 GameState.TimeOver -> {
                     state = GameState.NotStarted
-                    player1Timer = initTimer(setting, true)
-                    player2Timer = initTimer(setting, false)
+                    player1Timer = initTimer(setting, Player1)
+                    player2Timer = initTimer(setting, Player2)
                 }
                 else -> {
                 }
             }
         }
-        player1Timer = initTimer(setting, true)
-        player2Timer = initTimer(setting, false)
+        player1Timer = initTimer(setting, Player1)
+        player2Timer = initTimer(setting, Player2)
         sound = Speech(this)
     }
 
-    fun startTimer(player1: Boolean) {
+    fun startTimer(player: Player) {
         when (state) {
             GameState.NotStarted -> {
                 sound?.playTurnStart()
-                if (player1) {
-                    player2Timer!!.turnStart()
-                    state = GameState.Player2Thinking
-                } else {
-                    player1Timer!!.turnStart()
-                    state = GameState.Player1Thinking
+                when (player) {
+                    Player1 -> {
+                        player2Timer!!.turnStart()
+                        state = GameState.Player2Thinking
+                    }
+                    Player2 -> {
+                        player1Timer!!.turnStart()
+                        state = GameState.Player1Thinking
+                    }
                 }
             }
-            GameState.Player1Thinking -> {
-                if (player1) {
+            GameState.Player1Thinking -> when (player) {
+                Player1 -> {
                     sound?.playTurnStart()
                     player1Timer!!.turnEnd()
                     player2Timer!!.turnStart()
                     state = GameState.Player2Thinking
                 }
+                else -> {
+                }
             }
-            GameState.Player2Thinking -> {
-                if (!player1) {
+            GameState.Player2Thinking -> when (player) {
+                Player2 -> {
                     sound?.playTurnStart()
                     player2Timer!!.turnEnd()
                     player1Timer!!.turnStart()
                     state = GameState.Player1Thinking
+                }
+                else -> {
                 }
             }
             else -> {

@@ -2,7 +2,6 @@ package com.github.tkawachi.byoyomi
 
 import android.app.Activity
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -10,23 +9,10 @@ import com.github.tkawachi.byoyomi.sound.Sound
 import com.github.tkawachi.byoyomi.sound.Speech
 import com.github.tkawachi.byoyomi.timer.ByobomiTimer
 import com.github.tkawachi.byoyomi.timer.Timer
-import com.github.tkawachi.byoyomi.R
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
 import org.jetbrains.anko.info
 import org.jetbrains.anko.verbose
-
-
-fun View.setOnTouchDown(f: () -> Unit) {
-    this.setOnTouchListener { view, motionEvent ->
-        if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-            f()
-            true
-        } else {
-            false
-        }
-    }
-}
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.

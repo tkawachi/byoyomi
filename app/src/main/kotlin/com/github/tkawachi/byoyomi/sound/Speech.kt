@@ -10,7 +10,10 @@ import org.jetbrains.anko.verbose
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class Speech(context: Context) : TextToSpeech.OnInitListener, AnkoLogger, Sound {
+class Speech(context: Context, val toneType: Int, val toneDurationMs: Int) :
+        TextToSpeech.OnInitListener, AnkoLogger, Sound {
+
+    constructor(context: Context): this(context, ToneGenerator.TONE_CDMA_PRESSHOLDKEY_LITE, 200)
 
     private var tts = TextToSpeech(context, this)
     private var isInitialized = false
@@ -23,7 +26,7 @@ class Speech(context: Context) : TextToSpeech.OnInitListener, AnkoLogger, Sound 
         val toneVolume = ((volume.toDouble() / maxVolume) * 100).toInt()
         debug("volume: $volume, maxVolume: $maxVolume, toneVolume: $toneVolume")
         val toneG = ToneGenerator(AudioManager.STREAM_ALARM, toneVolume)
-        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
+        toneG.startTone(toneType, toneDurationMs)
     }
 
     override fun playSecond(second: Int) = speak("${second}秒")

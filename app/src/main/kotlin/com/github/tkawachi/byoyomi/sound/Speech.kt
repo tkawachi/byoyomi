@@ -21,12 +21,18 @@ class Speech(context: Context, val toneType: Int, val toneDurationMs: Int) :
     private val audio = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
 
+    private var volume: Int = 0
+    private var _toneG: ToneGenerator? = null
+    private var toneG: ToneGenerator?
+        get() = _toneG
+        set(value) {
+            _toneG?.release()
+            _toneG = value
+        }
+
     override fun playTurnStart() {
-        val volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val toneVolume = ((volume.toDouble() / maxVolume) * 100).toInt()
-        debug("volume: $volume, maxVolume: $maxVolume, toneVolume: $toneVolume")
-        val toneG = ToneGenerator(AudioManager.STREAM_ALARM, toneVolume)
-        toneG.startTone(toneType, toneDurationMs)
+        updateVolume()
+        toneG?.startTone(toneType, toneDurationMs)
     }
 
     override fun playSecond(second: Int) = speak("${second}秒")
@@ -35,6 +41,19 @@ class Speech(context: Context, val toneType: Int, val toneDurationMs: Int) :
 
     override fun playByoyomiStart(seconds: Int) = speak("ここから一手 $seconds 秒です。")
 
+    private fun getToneVolume(): Int {
+        val volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+        return ((volume.toDouble() / maxVolume) * 100).toInt()
+    }
+
+    private fun updateVolume() {
+        val newVolume = getToneVolume()
+        if (volume != newVolume) {
+            volume = newVolume
+            toneG = ToneGenerator(AudioManager.STREAM_ALARM, volume)
+            debug("volume: $volume, maxVolume: $maxVolume, toneVolume: $volume")
+        }
+    }
 
     private fun speak(text: String) {
         if (isInitialized) {

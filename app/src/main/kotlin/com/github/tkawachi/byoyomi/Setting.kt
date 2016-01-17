@@ -1,4 +1,4 @@
-package net.pikot.byoyomi
+package com.github.tkawachi.byoyomi
 
 data class Setting(val 持ち時間: Int, val 秒読み時間: Int) {
 }

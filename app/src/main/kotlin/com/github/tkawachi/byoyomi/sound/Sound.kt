@@ -1,4 +1,4 @@
-package net.pikot.byoyomi.sound
+package com.github.tkawachi.byoyomi.sound
 
 interface Sound {
     fun playTurnStart()

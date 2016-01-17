@@ -1,4 +1,4 @@
-package net.pikot.byoyomi
+package com.github.tkawachi.byoyomi
 
 data class DisplayData(val 残り持ち時間: Int, val 残り秒読み時間: Int) {
     fun buttonText(): String {

@@ -1,4 +1,4 @@
-package net.pikot.byoyomi;
+package com.github.tkawachi.byoyomi;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

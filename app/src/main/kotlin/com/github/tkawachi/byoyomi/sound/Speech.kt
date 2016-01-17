@@ -1,4 +1,4 @@
-package net.pikot.byoyomi.sound
+package com.github.tkawachi.byoyomi.sound
 
 import android.content.Context
 import android.media.AudioManager

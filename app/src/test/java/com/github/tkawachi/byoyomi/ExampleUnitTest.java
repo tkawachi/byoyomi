@@ -1,4 +1,4 @@
-package net.pikot.byoyomi;
+package com.github.tkawachi.byoyomi;
 
 import org.junit.Test;
 

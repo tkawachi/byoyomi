@@ -1,7 +1,7 @@
-package net.pikot.byoyomi.timer
+package com.github.tkawachi.byoyomi.timer
 
 import android.os.CountDownTimer
-import net.pikot.byoyomi.Clock
+import com.github.tkawachi.byoyomi.Clock
 
 open class PauseableTimer (
         private val millis: Long,

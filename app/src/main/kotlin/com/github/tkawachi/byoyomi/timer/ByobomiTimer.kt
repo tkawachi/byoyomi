@@ -1,8 +1,8 @@
-package net.pikot.byoyomi.timer
+package com.github.tkawachi.byoyomi.timer
 
-import net.pikot.byoyomi.Clock
-import net.pikot.byoyomi.DisplayData
-import net.pikot.byoyomi.Setting
+import com.github.tkawachi.byoyomi.Clock
+import com.github.tkawachi.byoyomi.DisplayData
+import com.github.tkawachi.byoyomi.Setting
 import org.jetbrains.anko.AnkoLogger
 
 class ByobomiTimer(

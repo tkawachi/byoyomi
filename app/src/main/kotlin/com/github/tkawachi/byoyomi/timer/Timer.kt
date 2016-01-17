@@ -1,4 +1,4 @@
-package net.pikot.byoyomi.timer
+package com.github.tkawachi.byoyomi.timer
 
 interface Timer {
     /**

@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "net.pikot.byoyomi"
+        applicationId "com.github.tkawachi.byoyomi"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

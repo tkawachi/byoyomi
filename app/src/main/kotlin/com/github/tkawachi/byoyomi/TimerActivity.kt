@@ -1,4 +1,4 @@
-package net.pikot.byoyomi
+package com.github.tkawachi.byoyomi
 
 import android.app.Activity
 import android.os.Bundle
@@ -6,10 +6,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import net.pikot.byoyomi.sound.Sound
-import net.pikot.byoyomi.sound.Speech
-import net.pikot.byoyomi.timer.ByobomiTimer
-import net.pikot.byoyomi.timer.Timer
+import com.github.tkawachi.byoyomi.sound.Sound
+import com.github.tkawachi.byoyomi.sound.Speech
+import com.github.tkawachi.byoyomi.timer.ByobomiTimer
+import com.github.tkawachi.byoyomi.timer.Timer
+import com.github.tkawachi.byoyomi.R
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
 import org.jetbrains.anko.info

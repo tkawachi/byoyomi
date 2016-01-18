@@ -26,8 +26,8 @@ class TurnButton(context: Context?, attrs: AttributeSet?) :
     }
 
     enum class State(val backgroundColor: Int, val textColor: Int) {
-        Default(Color.parseColor("#436BFF"), Color.BLACK),
-        MyTurn(Color.parseColor("#90A7FF"), Color.BLACK),
+        Default(Color.parseColor("#90A7FF"), Color.BLACK),
+        MyTurn(Color.parseColor("#436BFF"), Color.WHITE),
         OthersTurn(Color.parseColor("#48547F"), Color.parseColor("#aaaaaa"))
     }
 }

@@ -31,17 +31,6 @@ class TimerActivity : Activity(), Game, AnkoLogger {
     private var player1Timer: Timer? = null
     private var player2Timer: Timer? = null
 
-
-    // Note that some of these constants are new as of API 16 (Jelly Bean)
-    // and API 19 (KitKat). It is safe to use them, as they are inlined
-    // at compile-time and do nothing on earlier devices.
-    private val visibilityFlag = View.SYSTEM_UI_FLAG_LOW_PROFILE or
-            View.SYSTEM_UI_FLAG_FULLSCREEN or
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-
     private fun initTimer(setting: Setting, player: Player): Timer {
         val playerString = "$player"
         buttons?.byPlayer(player)?.text = DisplayData.fromSetting(setting).buttonText()
@@ -68,20 +57,12 @@ class TimerActivity : Activity(), Game, AnkoLogger {
         )
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_timer)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        window.decorView.systemUiVisibility = visibilityFlag
-        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-            // フルスクリーンでない時はフルスクリーンにする
-            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                window.decorView.systemUiVisibility = visibilityFlag
-            }
-        }
+        window.makeFullscreen()
 
         find<Button>(R.id.toSettingsBtn).setOnClickListener { info("clicked") } // TODO
         find<View>(R.id.player2Btn).rotation = 180f
@@ -124,11 +105,10 @@ class TimerActivity : Activity(), Game, AnkoLogger {
         buttons?.setDefault()
     }
 
-    private fun timerByPlayer(player: Player): Timer? =
-        when (player) {
-            Player1 -> player1Timer
-            Player2 -> player2Timer
-        }
+    private fun timerByPlayer(player: Player): Timer? = when (player) {
+        Player1 -> player1Timer
+        Player2 -> player2Timer
+    }
 
     override fun startTimer(startingPlayer: Player) {
         timerByPlayer(startingPlayer.other())?.turnEnd()

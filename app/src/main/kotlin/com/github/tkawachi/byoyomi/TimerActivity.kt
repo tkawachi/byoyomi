@@ -15,6 +15,7 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
 import org.jetbrains.anko.info
 import org.jetbrains.anko.verbose
+import java.util.*
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -28,8 +29,7 @@ class TimerActivity : Activity(), Game, AnkoLogger {
     private var state: GameState = BeforeStart(this)
     private var buttons: TurnButtonPair? = null
     private var sound: Sound? = null
-    private var player1Timer: Timer? = null
-    private var player2Timer: Timer? = null
+    private val timers: MutableMap<Player, Timer> = HashMap()
 
     private fun initTimer(setting: Setting, player: Player): Timer {
         val playerString = "$player"
@@ -86,33 +86,23 @@ class TimerActivity : Activity(), Game, AnkoLogger {
     }
 
     override fun pause() {
-        player1Timer?.pause()
-        player2Timer?.pause()
+        timers.forEach { it.value.pause() }
     }
 
     override fun resume(resumedPlayer: Player) {
-        timerByPlayer(resumedPlayer)?.resume()
+        timers.get(resumedPlayer)?.resume()
     }
 
     override fun reset() {
-        player1Timer?.pause()
-        player2Timer?.pause()
-
         state = BeforeStart(this)
-
-        player1Timer = initTimer(setting, Player1)
-        player2Timer = initTimer(setting, Player2)
         buttons?.setDefault()
-    }
-
-    private fun timerByPlayer(player: Player): Timer? = when (player) {
-        Player1 -> player1Timer
-        Player2 -> player2Timer
+        timers.put(Player1, initTimer(setting, Player1))?.pause()
+        timers.put(Player2, initTimer(setting, Player2))?.pause()
     }
 
     override fun startTimer(startingPlayer: Player) {
-        timerByPlayer(startingPlayer.other())?.turnEnd()
-        timerByPlayer(startingPlayer)?.turnStart()
+        timers.get(startingPlayer.other())?.turnEnd()
+        timers.get(startingPlayer)?.turnStart()
         sound?.playTurnStart()
         buttons?.startTurn(startingPlayer)
     }

@@ -20,32 +20,12 @@ import org.jetbrains.anko.verbose
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class TimerActivity : Activity(), AnkoLogger {
+class TimerActivity : Activity(), Game, AnkoLogger {
 
     private val setting = Setting(0, 30) // TODO
-
     private val clock = SystemClock()
 
-    private var _state = GameState.NotStarted
-    private var state: GameState
-        get() = _state
-        set(value) {
-            _state = value
-
-            when (_state) {
-                GameState.Player1Thinking -> {
-                    buttons?.startTurn(Player1)
-                }
-                GameState.Player2Thinking -> {
-                    buttons?.startTurn(Player2)
-                }
-                GameState.NotStarted -> {
-                    buttons?.setDefault()
-                }
-                else -> {}
-            }
-        }
-    private var pausedState: GameState? = null
+    private var state: GameState = BeforeStart(this)
     private var buttons: TurnButtonPair? = null
     private var sound: Sound? = null
     private var player1Timer: Timer? = null
@@ -82,11 +62,12 @@ class TimerActivity : Activity(), AnkoLogger {
                     sound?.playByoyomiStart(it)
                 },
                 {
-                    state = GameState.TimeOver
+                    state = TimeOver(this)
                     verbose("timeOver $playerString")
                 }
         )
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +83,6 @@ class TimerActivity : Activity(), AnkoLogger {
             }
         }
 
-
         find<Button>(R.id.toSettingsBtn).setOnClickListener { info("clicked") } // TODO
         find<View>(R.id.player2Btn).rotation = 180f
 
@@ -112,85 +92,49 @@ class TimerActivity : Activity(), AnkoLogger {
                 Player2 -> R.id.player2Btn
             }
             val b = find<TurnButton>(id)
-            b.setOnTouchDown { startTimer(player) }
+            b.setOnTouchDown { state = state.buttonPressed(player) }
             return b
         }
         buttons = TurnButtonPair(getButton(Player1), getButton(Player2))
 
         find<Button>(R.id.pauseBtn).setOnClickListener {
-            when (state) {
-                GameState.Player1Thinking -> {
-                    pausedState = state
-                    state = GameState.Pause
-                    player1Timer!!.pause()
-                }
-                GameState.Player2Thinking -> {
-                    pausedState = state
-                    state = GameState.Pause
-                    player2Timer!!.pause()
-                }
-                GameState.Pause -> {
-                    state = pausedState!!
-                    when (state) {
-                        GameState.Player1Thinking -> player1Timer!!.resume()
-                        GameState.Player2Thinking -> player2Timer!!.resume()
-                        else -> {
-                        }
-                    }
-                }
-                GameState.TimeOver -> {
-                    state = GameState.NotStarted
-                    player1Timer = initTimer(setting, Player1)
-                    player2Timer = initTimer(setting, Player2)
-                }
-                else -> {
-                }
-            }
+            state = state.pausePressed()
         }
-        player1Timer = initTimer(setting, Player1)
-        player2Timer = initTimer(setting, Player2)
         sound = Speech(this)
+        reset()
     }
 
-    fun startTimer(player: Player) {
-        when (state) {
-            GameState.NotStarted -> {
-                sound?.playTurnStart()
-                when (player) {
-                    Player1 -> {
-                        player2Timer!!.turnStart()
-                        state = GameState.Player2Thinking
-                    }
-                    Player2 -> {
-                        player1Timer!!.turnStart()
-                        state = GameState.Player1Thinking
-                    }
-                }
-            }
-            GameState.Player1Thinking -> when (player) {
-                Player1 -> {
-                    sound?.playTurnStart()
-                    player1Timer!!.turnEnd()
-                    player2Timer!!.turnStart()
-                    state = GameState.Player2Thinking
-                }
-                else -> {
-                }
-            }
-            GameState.Player2Thinking -> when (player) {
-                Player2 -> {
-                    sound?.playTurnStart()
-                    player2Timer!!.turnEnd()
-                    player1Timer!!.turnStart()
-                    state = GameState.Player1Thinking
-                }
-                else -> {
-                }
-            }
-            else -> {
+    override fun pause() {
+        player1Timer?.pause()
+        player2Timer?.pause()
+    }
 
-            }
+    override fun resume(resumedPlayer: Player) {
+        timerByPlayer(resumedPlayer)?.resume()
+    }
+
+    override fun reset() {
+        player1Timer?.pause()
+        player2Timer?.pause()
+
+        state = BeforeStart(this)
+
+        player1Timer = initTimer(setting, Player1)
+        player2Timer = initTimer(setting, Player2)
+        buttons?.setDefault()
+    }
+
+    private fun timerByPlayer(player: Player): Timer? =
+        when (player) {
+            Player1 -> player1Timer
+            Player2 -> player2Timer
         }
+
+    override fun startTimer(startingPlayer: Player) {
+        timerByPlayer(startingPlayer.other())?.turnEnd()
+        timerByPlayer(startingPlayer)?.turnStart()
+        sound?.playTurnStart()
+        buttons?.startTurn(startingPlayer)
     }
 
 }

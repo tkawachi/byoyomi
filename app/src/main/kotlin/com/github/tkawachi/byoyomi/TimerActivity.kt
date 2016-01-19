@@ -51,7 +51,7 @@ class TimerActivity : Activity(), Game, AnkoLogger {
                     sound?.playByoyomiStart(it)
                 },
                 {
-                    state = TimeOver(this)
+                    state = state.timerExpired(player)
                     verbose("timeOver $playerString")
                 }
         )
@@ -94,7 +94,6 @@ class TimerActivity : Activity(), Game, AnkoLogger {
     }
 
     override fun reset() {
-        state = BeforeStart(this)
         buttons?.setDefault()
         timers.put(Player1, initTimer(setting, Player1))?.pause()
         timers.put(Player2, initTimer(setting, Player2))?.pause()

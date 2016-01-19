@@ -10,11 +10,17 @@ interface GameState {
      * pause ボタンが押された。
      */
     fun pausePressed(): GameState
+
+    /**
+     * player のタイマーがきれた。
+     */
+    fun timerExpired(player: Player): GameState
 }
 
 abstract class DefaultGameState : GameState {
     override fun buttonPressed(player: Player): GameState = this
     override fun pausePressed(): GameState = this
+    override fun timerExpired(player: Player): GameState = this
 }
 
 class BeforeStart(val game: Game) : DefaultGameState() {
@@ -38,6 +44,8 @@ class PlayerThinking(val game: Game, val thinking: Player) : DefaultGameState() 
         game.pause()
         return Paused(game, this, thinking)
     }
+
+    override fun timerExpired(player: Player): GameState = TimeOver(game)
 }
 
 class Paused(val game: Game, val beforeState: GameState, val thinking: Player) : DefaultGameState() {

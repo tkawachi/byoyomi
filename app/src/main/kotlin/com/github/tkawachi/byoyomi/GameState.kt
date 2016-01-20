@@ -1,5 +1,7 @@
 package com.github.tkawachi.byoyomi
 
+import com.github.tkawachi.byoyomi.CenterButtonState.*
+
 interface GameState {
     /**
      * player がボタンを押した。
@@ -25,6 +27,11 @@ interface GameState {
      * player のタイマーがきれた。
      */
     fun timerExpired(player: Player): GameState
+
+    /**
+     * 中央ボタンの状態
+     */
+    val centerButtonState: CenterButtonState
 }
 
 abstract class DefaultGameState(private val game: Game) : GameState {
@@ -36,6 +43,8 @@ abstract class DefaultGameState(private val game: Game) : GameState {
         game.reset()
         return BeforeStart(game)
     }
+
+    override val centerButtonState: CenterButtonState = ShowPauseButton
 }
 
 class BeforeStart(private val game: Game) : DefaultGameState(game) {
@@ -43,6 +52,7 @@ class BeforeStart(private val game: Game) : DefaultGameState(game) {
         game.startTimer(player.other())
         return PlayerThinking(game, player.other())
     }
+    override val centerButtonState: CenterButtonState = ShowInactivePauseButton
 }
 
 class PlayerThinking(private val game: Game, private val thinking: Player) :
@@ -74,4 +84,6 @@ class Paused(
     }
 }
 
-class TimeOver(private val game: Game): DefaultGameState(game)
+class TimeOver(private val game: Game): DefaultGameState(game) {
+    override val centerButtonState: CenterButtonState = ShowResetButton
+}

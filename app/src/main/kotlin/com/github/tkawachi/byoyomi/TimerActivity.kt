@@ -26,7 +26,13 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
     private val setting = Setting(0, 30) // TODO
     private val clock = SystemClock()
 
-    private var state: GameState = BeforeStart(this)
+    private var _state: GameState = BeforeStart(this)
+    private var state: GameState
+        get() = _state
+        set(value) {
+            applyViewToState(value)
+            _state = value
+        }
     private var buttons: TurnButtonPair? = null
     private var sound: Sound? = null
     private var pauseOverlay: PauseOverlayFragment? = null
@@ -53,7 +59,6 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
                 },
                 {
                     state = state.timerExpired(player)
-                    showPauseBtn(false)
                     verbose("timeOver $playerString")
                 }
         )
@@ -89,7 +94,9 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
         pauseOverlay?.resetBtn?.setOnClickListener { state = state.resetPressed() }
 
         sound = Speech(this)
+
         reset()
+        applyViewToState(state)
     }
 
     override fun pause() {
@@ -106,7 +113,6 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
         buttons?.setDefault()
         timers.put(Player1, initTimer(setting, Player1))?.pause()
         timers.put(Player2, initTimer(setting, Player2))?.pause()
-        showPauseBtn(true)
         hidePauseOverlay()
     }
 
@@ -131,13 +137,28 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
                 .commit()
     }
 
-    private fun showPauseBtn(show: Boolean) {
-        if (show) {
-            find<Button>(R.id.resetBtn).visibility = View.INVISIBLE
-            find<Button>(R.id.pauseBtn).visibility = View.VISIBLE
-        } else {
-            find<Button>(R.id.resetBtn).visibility = View.VISIBLE
-            find<Button>(R.id.pauseBtn).visibility = View.INVISIBLE
+    private fun applyViewToState(state: GameState) {
+        showCenterButton(state.centerButtonState)
+    }
+
+    private fun showCenterButton(state: CenterButtonState) {
+        val pauseBtn = find<Button>(R.id.pauseBtn)
+        val resetBtn = find<Button>(R.id.resetBtn)
+        when (state) {
+            CenterButtonState.ShowPauseButton -> {
+                resetBtn.visibility = View.INVISIBLE
+                pauseBtn.visibility = View.VISIBLE
+                pauseBtn.isEnabled = true
+            }
+            CenterButtonState.ShowInactivePauseButton -> {
+                resetBtn.visibility = View.INVISIBLE
+                pauseBtn.visibility = View.VISIBLE
+                pauseBtn.isEnabled = false
+            }
+            CenterButtonState.ShowResetButton -> {
+                resetBtn.visibility = View.VISIBLE
+                pauseBtn.visibility = View.INVISIBLE
+            }
         }
     }
 

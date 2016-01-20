@@ -7,9 +7,19 @@ interface GameState {
     fun buttonPressed(player: Player): GameState
 
     /**
-     * pause ボタンが押された。
+     * 一時停止ボタンが押された。
      */
     fun pausePressed(): GameState
+
+    /**
+     * 再開ボタンが押された。
+     */
+    fun resumePressed(): GameState
+
+    /**
+     * 初期化ボタンが押された。
+     */
+    fun resetPressed(): GameState
 
     /**
      * player のタイマーがきれた。
@@ -17,20 +27,26 @@ interface GameState {
     fun timerExpired(player: Player): GameState
 }
 
-abstract class DefaultGameState : GameState {
+abstract class DefaultGameState(private val game: Game) : GameState {
     override fun buttonPressed(player: Player): GameState = this
     override fun pausePressed(): GameState = this
     override fun timerExpired(player: Player): GameState = this
+    override fun resumePressed(): GameState = this
+    override fun resetPressed(): GameState {
+        game.reset()
+        return BeforeStart(game)
+    }
 }
 
-class BeforeStart(val game: Game) : DefaultGameState() {
+class BeforeStart(private val game: Game) : DefaultGameState(game) {
     override fun buttonPressed(player: Player): GameState {
         game.startTimer(player.other())
         return PlayerThinking(game, player.other())
     }
 }
 
-class PlayerThinking(val game: Game, val thinking: Player) : DefaultGameState() {
+class PlayerThinking(private val game: Game, private val thinking: Player) :
+        DefaultGameState(game) {
     override fun buttonPressed(player: Player): GameState {
         return if (thinking == player) {
             game.startTimer(player.other())
@@ -48,16 +64,14 @@ class PlayerThinking(val game: Game, val thinking: Player) : DefaultGameState() 
     override fun timerExpired(player: Player): GameState = TimeOver(game)
 }
 
-class Paused(val game: Game, val beforeState: GameState, val thinking: Player) : DefaultGameState() {
-    override fun pausePressed(): GameState {
+class Paused(
+        private val game: Game,
+        private val beforeState: GameState,
+        private val thinking: Player) : DefaultGameState(game) {
+    override fun resumePressed(): GameState {
         game.resume(thinking)
         return beforeState
     }
 }
 
-class TimeOver(val game: Game): DefaultGameState() {
-    override fun pausePressed(): GameState {
-        game.reset()
-        return BeforeStart(game)
-    }
-}
+class TimeOver(private val game: Game): DefaultGameState(game)

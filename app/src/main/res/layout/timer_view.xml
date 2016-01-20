@@ -1,0 +1,80 @@
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#22357F"
+    android:clickable="true">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+
+    <com.github.tkawachi.byoyomi.TurnButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_heightPercent="30%"
+        app:layout_marginPercent="5%"
+        android:text="Player 2"
+        android:id="@+id/player2Btn"
+        android:textSize="70sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="40%"
+        app:layout_heightPercent="14%"
+        app:layout_marginTopPercent="3%"
+        app:layout_marginBottomPercent="3%"
+        app:layout_marginLeftPercent="5%"
+        android:layout_below="@id/player2Btn"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:text="初期化"
+        android:id="@+id/resetBtn"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="40%"
+        app:layout_heightPercent="14%"
+        app:layout_marginTopPercent="3%"
+        app:layout_marginBottomPercent="3%"
+        app:layout_marginLeftPercent="5%"
+        android:layout_below="@id/player2Btn"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/pause"
+        android:id="@+id/pauseBtn"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="40%"
+        app:layout_heightPercent="14%"
+        app:layout_marginTopPercent="3%"
+        app:layout_marginBottomPercent="3%"
+        app:layout_marginRightPercent="5%"
+        android:layout_below="@id/player2Btn"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/setting"
+        android:id="@+id/toSettingsBtn"
+        />
+
+    <com.github.tkawachi.byoyomi.TurnButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_marginPercent="5%"
+        app:layout_heightPercent="30%"
+        android:layout_alignParentBottom="true"
+        android:text="Player 1"
+        android:id="@+id/player1Btn"
+        android:textSize="70sp" />
+
+</android.support.percent.PercentRelativeLayout>

@@ -1,7 +1,7 @@
 package com.github.tkawachi.byoyomi
 
-import android.app.Activity
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -21,7 +21,7 @@ import java.util.*
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class TimerActivity : Activity(), Game, AnkoLogger {
+class TimerActivity : FragmentActivity(), Game, AnkoLogger {
 
     private val setting = Setting(0, 30) // TODO
     private val clock = SystemClock()
@@ -29,6 +29,7 @@ class TimerActivity : Activity(), Game, AnkoLogger {
     private var state: GameState = BeforeStart(this)
     private var buttons: TurnButtonPair? = null
     private var sound: Sound? = null
+    private var pauseOverlay: PauseOverlayFragment? = null
     private val timers: MutableMap<Player, Timer> = HashMap()
 
     private fun initTimer(setting: Setting, player: Player): Timer {
@@ -52,6 +53,7 @@ class TimerActivity : Activity(), Game, AnkoLogger {
                 },
                 {
                     state = state.timerExpired(player)
+                    showPauseBtn(false)
                     verbose("timeOver $playerString")
                 }
         )
@@ -78,18 +80,25 @@ class TimerActivity : Activity(), Game, AnkoLogger {
         }
         buttons = TurnButtonPair(getButton(Player1), getButton(Player2))
 
-        find<Button>(R.id.pauseBtn).setOnClickListener {
-            state = state.pausePressed()
-        }
+        find<Button>(R.id.pauseBtn).setOnClickListener { state = state.pausePressed() }
+        find<Button>(R.id.resetBtn).setOnClickListener { state = state.resetPressed() }
+
+        val fm = supportFragmentManager
+        pauseOverlay = fm.findFragmentById(R.id.pauseOverlay) as PauseOverlayFragment
+        pauseOverlay?.resumeBtn?.setOnClickListener { state = state.resumePressed() }
+        pauseOverlay?.resetBtn?.setOnClickListener { state = state.resetPressed() }
+
         sound = Speech(this)
         reset()
     }
 
     override fun pause() {
         timers.forEach { it.value.pause() }
+        showPauseOverlay()
     }
 
     override fun resume(resumedPlayer: Player) {
+        hidePauseOverlay()
         timers.get(resumedPlayer)?.resume()
     }
 
@@ -97,6 +106,8 @@ class TimerActivity : Activity(), Game, AnkoLogger {
         buttons?.setDefault()
         timers.put(Player1, initTimer(setting, Player1))?.pause()
         timers.put(Player2, initTimer(setting, Player2))?.pause()
+        showPauseBtn(true)
+        hidePauseOverlay()
     }
 
     override fun startTimer(startingPlayer: Player) {
@@ -104,6 +115,30 @@ class TimerActivity : Activity(), Game, AnkoLogger {
         timers.get(startingPlayer)?.turnStart()
         sound?.playTurnStart()
         buttons?.startTurn(startingPlayer)
+    }
+
+    private fun hidePauseOverlay() {
+        val fm = supportFragmentManager
+        fm.beginTransaction()
+                .hide(pauseOverlay)
+                .commit()
+    }
+
+    private fun showPauseOverlay() {
+        val fm = supportFragmentManager
+        fm.beginTransaction()
+                .show(pauseOverlay)
+                .commit()
+    }
+
+    private fun showPauseBtn(show: Boolean) {
+        if (show) {
+            find<Button>(R.id.resetBtn).visibility = View.INVISIBLE
+            find<Button>(R.id.pauseBtn).visibility = View.VISIBLE
+        } else {
+            find<Button>(R.id.resetBtn).visibility = View.VISIBLE
+            find<Button>(R.id.pauseBtn).visibility = View.INVISIBLE
+        }
     }
 
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:alpha="0.7"
+        android:clickable="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pauseText"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:text="一時停止中"
+        android:textColor="#ffffff"
+        android:textSize="40sp"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="再開"
+        android:id="@+id/resumeBtn"
+        android:layout_below="@+id/pauseText"
+        android:layout_alignLeft="@+id/pauseText"
+        android:layout_alignStart="@+id/pauseText" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="初期化"
+        android:id="@+id/overlayResetBtn"
+        android:layout_below="@+id/pauseText"
+        android:layout_alignRight="@id/pauseText"
+         />
+
+</RelativeLayout>

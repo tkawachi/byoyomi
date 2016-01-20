@@ -80,7 +80,7 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
                 Player2 -> R.id.player2Btn
             }
             val b = find<TurnButton>(id)
-            b.setOnTouchDown { state = state.buttonPressed(player) }
+            b.setOnTouchDown(false, { state = state.buttonPressed(player) })
             return b
         }
         buttons = TurnButtonPair(getButton(Player1), getButton(Player2))

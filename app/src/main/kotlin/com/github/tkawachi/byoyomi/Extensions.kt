@@ -5,11 +5,11 @@ import android.view.View
 import android.view.Window
 
 
-fun View.setOnTouchDown(f: () -> Unit) {
+fun View.setOnTouchDown(consume: Boolean, f: () -> Unit) {
     this.setOnTouchListener { view, motionEvent ->
         if (motionEvent.action == MotionEvent.ACTION_DOWN) {
             f()
-            true
+            consume
         } else {
             false
         }

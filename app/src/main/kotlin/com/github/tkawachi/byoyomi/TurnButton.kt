@@ -2,6 +2,7 @@ package com.github.tkawachi.byoyomi
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.widget.Button
 
@@ -21,7 +22,7 @@ class TurnButton(context: Context?, attrs: AttributeSet?) :
     }
 
     private fun applyStyle(state: State) {
-        setBackgroundColor(state.backgroundColor)
+        background.setColorFilter(state.backgroundColor, PorterDuff.Mode.MULTIPLY)
         setTextColor(state.textColor)
     }
 

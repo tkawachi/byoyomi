@@ -30,10 +30,10 @@ dependencies {
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.android.support:percent:23.1.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'org.jetbrains.anko:anko-common:0.8'
+    compile 'org.jetbrains.anko:anko-common:0.8.3'
 }
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-4584'
+    ext.kotlin_version = '1.0.0'
     repositories {
         mavenCentral()
     }

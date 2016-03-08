@@ -23,6 +23,11 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -31,7 +36,9 @@ dependencies {
     compile 'com.android.support:percent:23.2.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'org.jetbrains.anko:anko-common:0.8.3'
+    compile "com.github.tkawachi:durationkt:0.0.2-SNAPSHOT"
 }
+
 buildscript {
     ext.kotlin_version = '1.0.0'
     repositories {
@@ -40,7 +47,4 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
-}
-repositories {
-    mavenCentral()
 }

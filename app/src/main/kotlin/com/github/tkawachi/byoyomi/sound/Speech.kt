@@ -39,7 +39,7 @@ class Speech(context: Context, val toneType: Int, val toneDurationMs: Int) :
 
     override fun playNumber(n: Int) = speak("$n")
 
-    override fun playByoyomiStart(seconds: Int) = speak("ここから一手 $seconds 秒です。")
+    override fun playByoyomiStart(seconds: Long) = speak("ここから一手 $seconds 秒です。")
 
     private fun getToneVolume(): Int {
         val volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)

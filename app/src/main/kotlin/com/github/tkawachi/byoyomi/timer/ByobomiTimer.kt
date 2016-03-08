@@ -1,27 +1,26 @@
 package com.github.tkawachi.byoyomi.timer
 
 import com.github.tkawachi.byoyomi.Clock
-import com.github.tkawachi.byoyomi.DisplayData
 import com.github.tkawachi.byoyomi.Setting
+import com.github.tkawachi.durationkt.Duration
+import com.github.tkawachi.durationkt.seconds
 import org.jetbrains.anko.AnkoLogger
 
 class ByobomiTimer(
         private val clock: Clock,
         private val setting: Setting,
         private val countDownInterval: Long,
-        private val displayTime: (DisplayData) -> Unit,
-        private val startByoyomi: (Int) -> Unit,
+        private val displayTime: (TimerState) -> Unit,
+        private val startByoyomi: (Duration) -> Unit,
         private val timeOver: () -> Unit
 ) : Timer, AnkoLogger {
 
     private var countDownTimer: PauseableTimer =
-            if (setting.持ち時間 > 0) MotiJikanTimer(setting.持ち時間 * 1000L)
-            else ByoyomiTimer(setting.秒読み時間 * 1000L)
-
-    private var lastDisplayData: DisplayData = DisplayData.fromSetting(setting)
+            if (setting.持ち時間 > 0.seconds) MotiJikanTimer(setting.持ち時間)
+            else ByoyomiTimer(setting.秒読み時間)
 
     init {
-        displayTime(lastDisplayData)
+        displayTime(TimerState.fromSetting(setting))
     }
 
     override fun turnEnd() {
@@ -31,8 +30,8 @@ class ByobomiTimer(
             }
             is ByoyomiTimer -> {
                 countDownTimer.pause()
-                countDownTimer = ByoyomiTimer((setting.秒読み時間) * 1000L)
-                displayTimeIfNecessary(DisplayData(0, setting.秒読み時間))
+                countDownTimer = ByoyomiTimer(setting.秒読み時間)
+                displayTime(TimerState(Duration.zero, setting.秒読み時間))
             }
             else -> {
                 error("Unexpected $countDownTimer")
@@ -52,31 +51,20 @@ class ByobomiTimer(
         countDownTimer.resume()
     }
 
-    private fun displayTimeIfNecessary(data: DisplayData) {
-        if (lastDisplayData != data) {
-            displayTime(data);
-            lastDisplayData = data;
-        }
-    }
-
-    companion object {
-        fun restSec(msec: Long): Int = Math.ceil(msec / 1000.0).toInt()
-    }
-
-    private inner class MotiJikanTimer(millis: Long) :
-            PauseableTimer(millis, countDownInterval, clock, { rest ->
-                displayTimeIfNecessary(DisplayData(restSec(rest), setting.秒読み時間))
+    private inner class MotiJikanTimer(duration: Duration) :
+            PauseableTimer(duration, countDownInterval, clock, { rest ->
+                displayTime(TimerState(rest, setting.秒読み時間))
             }, {
-                countDownTimer = ByoyomiTimer(setting.秒読み時間 * 1000L)
+                countDownTimer = ByoyomiTimer(setting.秒読み時間)
                 countDownTimer.resume()
                 startByoyomi(setting.秒読み時間)
             })
 
-    private inner class ByoyomiTimer(millis: Long) :
-            PauseableTimer(millis, countDownInterval, clock, { rest ->
-                displayTimeIfNecessary(DisplayData(0, restSec(rest)))
+    private inner class ByoyomiTimer(duration: Duration) :
+            PauseableTimer(duration, countDownInterval, clock, { rest ->
+                displayTime(TimerState(Duration.zero, rest))
             }, {
-                displayTimeIfNecessary(DisplayData(0, 0))
+                displayTime(TimerState.zero)
                 timeOver()
             })
 

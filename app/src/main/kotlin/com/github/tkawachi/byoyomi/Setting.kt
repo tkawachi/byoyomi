@@ -1,4 +1,6 @@
 package com.github.tkawachi.byoyomi
 
-data class Setting(val 持ち時間: Int, val 秒読み時間: Int) {
+import com.github.tkawachi.durationkt.Duration
+
+data class Setting(val 持ち時間: Duration, val 秒読み時間: Duration) {
 }

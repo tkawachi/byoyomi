@@ -2,17 +2,19 @@ package com.github.tkawachi.byoyomi.timer
 
 import android.os.CountDownTimer
 import com.github.tkawachi.byoyomi.Clock
+import com.github.tkawachi.durationkt.Duration
+import com.github.tkawachi.durationkt.millis
 
 open class PauseableTimer (
-        private val millis: Long,
+        private val duration: Duration,
         private val resolutionMillis: Long,
         private val clock: Clock,
-        private val onTick: (Long) -> Unit,
+        private val onTick: (Duration) -> Unit,
         private val onFinish: () -> Unit) {
 
-    private var restMillis: Long = millis
+    private var restDuration: Duration = duration
     private var startAt: Long? = null
-    private var countDownTimer = MyCountDownTimer(restMillis)
+    private var countDownTimer = MyCountDownTimer(restDuration.toMillis())
 
     fun resume() {
         synchronized(this, {
@@ -28,8 +30,8 @@ open class PauseableTimer (
             val s = startAt
             if (s != null) {
                 countDownTimer.cancel()
-                restMillis -= clock.getCurrent() - s
-                countDownTimer = MyCountDownTimer(restMillis)
+                restDuration -= (clock.getCurrent() - s).millis
+                countDownTimer = MyCountDownTimer(restDuration.toMillis())
                 startAt = null
             }
         })
@@ -46,7 +48,7 @@ open class PauseableTimer (
         }
 
         override fun onTick(millisUntilFinished: Long) {
-            this@PauseableTimer.onTick(millisUntilFinished)
+            this@PauseableTimer.onTick(millisUntilFinished.millis)
         }
 
     }

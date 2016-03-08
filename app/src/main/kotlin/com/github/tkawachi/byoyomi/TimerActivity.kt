@@ -11,6 +11,9 @@ import com.github.tkawachi.byoyomi.sound.Sound
 import com.github.tkawachi.byoyomi.sound.Speech
 import com.github.tkawachi.byoyomi.timer.ByobomiTimer
 import com.github.tkawachi.byoyomi.timer.Timer
+import com.github.tkawachi.byoyomi.timer.TimerState
+import com.github.tkawachi.durationkt.Duration
+import com.github.tkawachi.durationkt.seconds
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
 import org.jetbrains.anko.info
@@ -23,7 +26,7 @@ import java.util.*
  */
 class TimerActivity : FragmentActivity(), Game, AnkoLogger {
 
-    private val setting = Setting(0, 30) // TODO
+    private val setting = Setting(Duration.zero, 30.seconds) // TODO
     private val clock = SystemClock()
 
     private var _state: GameState = BeforeStart(this)
@@ -40,22 +43,25 @@ class TimerActivity : FragmentActivity(), Game, AnkoLogger {
 
     private fun initTimer(setting: Setting, player: Player): Timer {
         val playerString = "$player"
-        buttons?.byPlayer(player)?.text = DisplayData.fromSetting(setting).buttonText()
+        buttons?.byPlayer(player)?.text = TimerState.fromSetting(setting).display()
 
         return ByobomiTimer(clock, setting, 100L,
-                { data ->
-                    verbose("$playerString ${data.buttonText()}")
-                    buttons?.byPlayer(player)?.text = data.buttonText()
-                    if (data.残り持ち時間 == 0 && data.残り秒読み時間 < 10) {
-                        val n = 10 - data.残り秒読み時間
+                { state ->
+                    verbose("$playerString ${state.display()}")
+
+                    val 消費秒 = (setting.秒読み時間 - state.残り秒読み時間).toSeconds().toInt()
+
+                    buttons?.byPlayer(player)?.text = state.display()
+
+                    if (state.残り持ち時間 == Duration.zero && state.残り秒読み時間 < 10.seconds) {
+                        val n = 10 - state.残り秒読み時間.toSeconds().toInt()
                         sound?.playNumber(n)
-                    } else if (setting.秒読み時間 > data.残り秒読み時間 &&
-                            (setting.秒読み時間 - data.残り秒読み時間) % 10 == 0) {
-                        sound?.playSecond(setting.秒読み時間 - data.残り秒読み時間)
+                    } else if (消費秒 > 0 && 消費秒 % 10 == 0) {
+                        sound?.playSecond(消費秒)
                     }
                 },
                 {
-                    sound?.playByoyomiStart(it)
+                    sound?.playByoyomiStart(it.toSeconds())
                 },
                 {
                     state = state.timerExpired(player)

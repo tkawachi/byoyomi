@@ -7,5 +7,5 @@ interface Sound {
 
     fun playNumber(n: Int)
 
-    fun playByoyomiStart(seconds: Int)
+    fun playByoyomiStart(seconds: Long)
 }
